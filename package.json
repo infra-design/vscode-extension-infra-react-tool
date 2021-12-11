@@ -1,0 +1,37 @@
+{
+  "name": "vscode-extension-infra-react-tool",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infra-design/vscode-extension-infra-react-tool.git"
+  },
+  "main": "./out/extension.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/infra-design/vscode-extension-infra-react-tool/issues"
+  },
+  "homepage": "https://github.com/infra-design/vscode-extension-infra-react-tool#readme",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint . --ext .ts,.tsx",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "@types/node": "^16.11.12",
+    "@types/vscode": "^1.63.0",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "eslint": "^8.4.1",
+    "typescript": "^4.5.3"
+  }
+}
