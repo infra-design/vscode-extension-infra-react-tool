@@ -20,8 +20,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   }
 
   public provideCodeLenses(
-    document: vscode.TextDocument,
-    token: vscode.CancellationToken
+    document: vscode.TextDocument
   ): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     if (
       vscode.workspace
@@ -49,10 +48,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     return []
   }
 
-  public resolveCodeLens(
-    codeLens: vscode.CodeLens,
-    token: vscode.CancellationToken
-  ) {
+  public resolveCodeLens(codeLens: vscode.CodeLens) {
     if (
       vscode.workspace
         .getConfiguration('codelens-sample')
