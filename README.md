@@ -2,12 +2,16 @@
 
 Improve your react development workflow with the following features
 
-# Hooks
+## Install
 
-## Before
+[Visualstudio Marketplace](https://marketplace.visualstudio.com/items?itemName=infra-design.vscode-extension-infra-react-tool)
+
+## Hooks
+
+### Before
 
 ![Before](https://raw.githubusercontent.com/infra-design/vscode-extension-infra-react-tool/master/images/before.jpg)
 
-## After
+### After
 
 ![After](https://raw.githubusercontent.com/infra-design/vscode-extension-infra-react-tool/master/images/after.jpg)
