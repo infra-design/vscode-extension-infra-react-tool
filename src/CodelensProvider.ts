@@ -6,13 +6,15 @@ import * as vscode from 'vscode'
 export class CodelensProvider implements vscode.CodeLensProvider {
   private codeLenses: vscode.CodeLens[] = []
   private regex: RegExp
+  private hookType = 'useMemo'
   private _onDidChangeCodeLenses: vscode.EventEmitter<void> =
     new vscode.EventEmitter<void>()
   public readonly onDidChangeCodeLenses: vscode.Event<void> =
     this._onDidChangeCodeLenses.event
 
-  constructor() {
-    this.regex = /useMemo\(/g
+  constructor(hookType: string) {
+    this.hookType = hookType
+    this.regex = new RegExp(hookType + '(\\(|\\<)', 'g')
 
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire()
@@ -55,8 +57,8 @@ export class CodelensProvider implements vscode.CodeLensProvider {
         .get('enableCodeLens', true)
     ) {
       codeLens.command = {
-        title: 'useMemo',
-        tooltip: 'Tooltip provided by sample extension',
+        title: this.hookType,
+        tooltip: this.hookType,
         command: 'codelens-sample.codelensAction',
         arguments: ['Argument 1', false],
       }
