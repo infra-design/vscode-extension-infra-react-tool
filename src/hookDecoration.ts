@@ -14,7 +14,8 @@ export function hookDecoration(context: vscode.ExtensionContext) {
       return
     }
 
-    const regEx1 = /(useMemo\(\(\) =>)|(useCallback\()|(useEffect\(\(\) =>)/g
+    const hookRegEx =
+      /(useMemo(<.+>)?\(\(\) =>)|(useCallback\()|(useEffect\(\(\) =>)/g
     const endRegEx = /,.?\[(.|\n)*?\]\)/g
 
     const text = activeEditor.document.getText()
@@ -26,7 +27,7 @@ export function hookDecoration(context: vscode.ExtensionContext) {
 
     let match
     let matchEnd
-    while ((match = regEx1.exec(text)) && (matchEnd = endRegEx.exec(text))) {
+    while ((match = hookRegEx.exec(text)) && (matchEnd = endRegEx.exec(text))) {
       if (match && matchEnd) {
         const startPos = activeEditor.document.positionAt(match.index)
         const endPos = activeEditor.document.positionAt(
