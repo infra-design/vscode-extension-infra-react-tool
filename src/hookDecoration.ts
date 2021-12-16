@@ -1,4 +1,4 @@
-import ts = require('typescript')
+import * as ts from 'typescript'
 import * as vscode from 'vscode'
 import { AstModel } from './AstModel'
 
