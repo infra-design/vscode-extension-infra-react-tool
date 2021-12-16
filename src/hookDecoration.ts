@@ -1,8 +1,10 @@
+import ts = require('typescript')
 import * as vscode from 'vscode'
+import { AstModel } from './AstModel'
 
 const hookDecorationType = vscode.window.createTextEditorDecorationType({
   cursor: 'pointer',
-  opacity: '0.13',
+  opacity: '0.2',
 })
 
 export function hookDecoration(context: vscode.ExtensionContext) {
@@ -14,48 +16,51 @@ export function hookDecoration(context: vscode.ExtensionContext) {
       return
     }
 
-    const hookRegEx =
-      /((useMemo(<.+>)?\(\(\) =>))|(useCallback\()|(useEffect\(\(\) =>)/g
-    const endRegEx = /,.?\[(.|\n)*?\]\)/g
-
-    const text = activeEditor.document.getText()
-
+    const astModel: AstModel = new AstModel()
     const decorations: vscode.DecorationOptions[] = []
 
-    // get the cursor position
     const cursorActivePosition = activeEditor.selection.active
+    const { positionAt } = activeEditor?.document
 
-    let match
-    let matchEnd
-    while ((match = hookRegEx.exec(text)) && (matchEnd = endRegEx.exec(text))) {
-      if (match && matchEnd) {
-        const startPos = activeEditor.document.positionAt(match.index)
-        const endPos = activeEditor.document.positionAt(
-          match.index + match[0].length
-        )
+    astModel.mapAllChildren().forEach(({ node, parent }) => {
+      try {
+        const blockStartPos = positionAt(parent.pos)
+        const blockEndPos = positionAt(parent.end)
+        const nodeName = node.escapedText.toString()
+        const isUseMemo = nodeName === 'useMemo'
+        const isUseEffect = nodeName === 'useEffect'
 
-        const startPosEnd = activeEditor.document.positionAt(matchEnd.index)
-        const endPosEnd = activeEditor.document.positionAt(
-          matchEnd.index + matchEnd[0].length
-        )
+        if (!blockStartPos || !blockEndPos) {
+          return
+        }
 
-        // if the cursor is inside the decoration, update the decoration
         if (
-          cursorActivePosition.isBefore(startPos) ||
-          cursorActivePosition.isAfter(endPosEnd)
+          cursorActivePosition.isBefore(blockStartPos) ||
+          cursorActivePosition.isAfter(blockEndPos)
         ) {
+          const funcBody = parent.arguments[0] as ts.ArrowFunction
+          const headerStartPos = positionAt(node.pos)
+          const headerEndPos =
+            isUseMemo || isUseEffect
+              ? positionAt(funcBody.equalsGreaterThanToken.end)
+              : positionAt(funcBody.pos)
+
           decorations.push({
-            range: new vscode.Range(startPos, endPos),
-            hoverMessage: 'react hook',
+            range: new vscode.Range(headerStartPos, headerEndPos),
+            hoverMessage: 'hook',
           })
 
+          const funcBodyEndPos = positionAt(funcBody.end)
+
           decorations.push({
-            range: new vscode.Range(startPosEnd, endPosEnd),
+            range: new vscode.Range(funcBodyEndPos, blockEndPos),
             hoverMessage: 'dependencies',
           })
         }
+      } catch (e) {
+        console.error(e)
       }
-    }
+    })
 
     activeEditor.setDecorations(hookDecorationType, decorations)
   }
